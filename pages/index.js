@@ -4,10 +4,12 @@ import { addDoc, collection, query, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { db, auth } from "../lib/firebase";
 import TaskItem from "./TaskItem";
+import { useRouter } from "next/router";
 
 export default function Home(props) {
 	const [input, setInput] = useState("");
 	const [tasks, setTasks] = useState([{ id: "", title: "" }]);
+	const router = useRouter();
 
 	const newTodo = async (e) => {
 		await addDoc(collection(db, "tasks"), { title: input });
@@ -29,7 +31,7 @@ export default function Home(props) {
 
 	useEffect(() => {
 		const unSub = onAuthStateChanged(auth, (user) => {
-			!user && props.history.push("login");
+			!user && router.push("/Login/");
 		});
 		return () => unSub();
 	});
@@ -45,7 +47,7 @@ export default function Home(props) {
 				onClick={async () => {
 					try {
 						await signOut(auth);
-						props.history.push("login");
+						router.push("/Login/");
 					} catch (error) {
 						alert(error.message);
 					}
@@ -62,7 +64,8 @@ export default function Home(props) {
 				/>
 				<button
 					onClick={newTodo}
-					className={`bg-sky-500 text-white py-2 px-3 ml-1`}>
+					className={`bg-sky-500 text-white py-2 px-3 ml-1`}
+					disabled={!input}>
 					Add
 				</button>
 			</div>

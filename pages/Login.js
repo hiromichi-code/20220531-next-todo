@@ -5,18 +5,20 @@ import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useRouter } from "next/router";
 
-function Login(props) {
+export default function Login(props) {
 	const [isLogin, setIsLogin] = useState(true);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const router = useRouter();
 
 	useEffect(() => {
 		const unSub = onAuthStateChanged(auth, (user) => {
-			user && props.history.push("/");
+			user && router.push("/");
 		});
 		return () => unSub();
-	}, [props.history]);
+	}, [router]);
 
 	return (
 		<div className={`bg-sky-500 h-screen flex items-center justify-center`}>
@@ -46,7 +48,7 @@ function Login(props) {
 							? async () => {
 									try {
 										await signInWithEmailAndPassword(auth, email, password);
-										props.history.push("/");
+										router.push("/");
 									} catch (error) {
 										alert(error.message);
 									}
@@ -54,7 +56,7 @@ function Login(props) {
 							: async () => {
 									try {
 										await createUserWithEmailAndPassword(auth, email, password);
-										props.history.push("/");
+										router.push("/");
 									} catch (error) {
 										alert(error.message);
 									}
@@ -71,5 +73,3 @@ function Login(props) {
 		</div>
 	);
 }
-
-export default Login;
